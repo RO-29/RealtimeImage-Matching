@@ -43,9 +43,9 @@ http://localhost:7000/init
 Trivia & WHY
 ====================================
 
-database used is postgres, it's schema is defined in server_sps.js in knex creatatble
+database used is postgres, it's schema is defined in server_esp.js in knex creatatable
 
-knex.js is ORM for javascriot for sql
+knex.js is ORM for javascript for sql
 
 socket.io is used for dual communication
 
