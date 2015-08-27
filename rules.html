@@ -1,0 +1,41 @@
+<!-- 
+change log--
+
+change var url= in engine.js
+
+change document.location in rules.html
+ -->
+<html>
+<head>
+<title>Play Image tag game , with your opponent</title>
+</head>
+<body>
+	<br><br>
+	<center>
+		<H1><b><u>Game Rules</u></b></H1>
+	</center>
+	<ol>
+		<li>You need another opponent paired to play this game (Max 2 at a time).</li>
+		<li>You may not know whom you are paired with.</li>
+		<li>During the game play each paired player is shown the same question.</li>
+		<li>Each question would have primary image and a set of secondary images to match to the primary image</li>
+		<li>Both paired players can move to the next question only when they choose the same set of secondary images</li>
+	</ol>
+	<br><br>
+	<center>
+		<button id='game_1'><H3><b>Continue</b></H3></button>
+	</center>
+	<script src="/static/js/jquery.js"></script>
+   	<script> 
+	  $(document).ready(function(){
+	  
+	  	$('#game_1').click(function(){
+	  		alert('Proceding To game1');
+	  		document.location = 'http://localhost:7000/game_1/';  
+	  	})
+	  	
+	  }) 
+ 	 
+ 	 </script>
+</body>
+</html>
