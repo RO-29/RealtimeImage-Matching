@@ -25,12 +25,17 @@ Note**When you press to next level, it might take some time to load the images o
 Running Instructions (onlocal machine)
 ===============================
 npm install 
+
 node server_esp.js
+
 http://localhost:7000/init
 
 *http://localhost:7000/init run this only for first time!
+
 *change db settings in server_esp.js
+
 *make sure port 7000 is free
+
 *open console in browser to see whats going under the hood
 
 
