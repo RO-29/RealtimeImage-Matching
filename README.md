@@ -59,4 +59,4 @@ this was the basic requirement of problme given here
 Also look at the comments in code to know more about the basic functions used
 
 databse is used to get total levels of game
-/static/images is organised in such a way taht it confroms to the game logic, for ex game having name "game_1" is stored as /static/images/game_1/level_n,where level_n contains the the base_image and option images of that level
+/static/images is organised in such a way that it caters to the game logic, for ex game having name "game_1" is stored as /static/images/game_1/level_n,where level_n contains the the base_image and option images of that level
