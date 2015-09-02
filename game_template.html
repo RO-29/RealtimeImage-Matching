@@ -22,6 +22,7 @@
 </style>
 </head>
 <body>
+	<div id='game'>
 	<div id='welcome'><center><b><h1><div id='level_text'></div></h1></b></center></div>
 	<br><br><br>
 	<center>
@@ -50,23 +51,30 @@
 	</form>
 	<center>
 		<br>
-		<button id='next'>Next level</button>
+		<button id='next' style='visibilty:"hidden"'>Next level</button>
     </center>
-	
+	</div>
 	<script src='/static/js/jquery.js'></script>
 	<script src="/socket.io/socket.io.js"></script>
    	<script src="/static/js/engine.js"></script>
    	<script>
    		$(document).ready(function(){
    			var room_ = document.location.href.split('/')[3]
-   			$('#level_text').html('Welcome To '+room_+'-Level1');
-   			$("#base_image").attr("src","/static/images/"+room_+"/level_1/0.jpg");
-   			$("#src1").attr("src","/static/images/"+room_+"/level_1/1.jpg");
-   			$("#src2").attr("src","/static/images/"+room_+"/level_1/2.jpg");
-   			$("#src3").attr("src","/static/images/"+room_+"/level_1/3.jpg");
-   			$("#src4").attr("src","/static/images/"+room_+"/level_1/4.jpg");
+   			var uname = document.location.href.split('/')[4]
+   			$('#level_text').html('Welcome ' +uname+' To '+room_+', Round-1 Level-1');
+   			$("#base_image").attr("src","/static/images/"+room_+"/round_1/1_0.jpg");
+   			$("#src1").attr("src","/static/images/"+room_+"/round_1/1_1.jpg");
+   			$("#src2").attr("src","/static/images/"+room_+"/round_1/1_2.jpg");
+   			$("#src3").attr("src","/static/images/"+room_+"/round_1/1_3.jpg");
+   			$("#src4").attr("src","/static/images/"+room_+"/round_1/1_4.jpg");
+   			$('#o1').attr('checked', false);
+   			$('#o2').attr('checked', false);
+   			$('#o3').attr('checked', false);  
+   			$('#o4').attr('checked', false); 
+ 
 
-   			join_room(room_);
+
+   			join_room(room_,uname);
 
    		})
    	</script>

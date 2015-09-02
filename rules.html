@@ -23,15 +23,21 @@ change document.location in rules.html
 	</ol>
 	<br><br>
 	<center>
+		<input id="Uname" type="text" placeholder="Your Name">
 		<button id='game_1'><H3><b>Continue</b></H3></button>
 	</center>
 	<script src="/static/js/jquery.js"></script>
    	<script> 
 	  $(document).ready(function(){
-	  
+
+	  	
 	  	$('#game_1').click(function(){
-	  		alert('Proceding To game1');
-	  		document.location = 'http://localhost:7000/game_1/';  
+	  		console.log('Proceding To game1');
+	  		if($('#Uname').val() == '') {
+	           alert('Please fill in your name before procceding.');
+	       	}
+	       	else
+	  			document.location = 'http://localhost:7000/game_1/'+$('#Uname').val();  
 	  	})
 	  	
 	  }) 
