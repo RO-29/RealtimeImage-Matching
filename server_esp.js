@@ -48,6 +48,10 @@
     res.json(global.round_wins_points)
   })
 
+  app.get('/overall_score',function(req,res){
+
+    res.json(global.scores)
+  })
 
   //init the database, Only One time call
   app.get('/init',function(req,res){
@@ -165,6 +169,7 @@
   global.round_win_number ={}
   global.round_wins_points ={}
   global.round_time_user ={}
+  global.scores =[]
   io.sockets.on('connection', function(socket) {
 
   		//Called on creation of game _room
@@ -436,6 +441,7 @@
                     flag_round = 0
 
                     if(p1_win>p2_win){
+
                       flag_round = 1
                       global.round_wins_points[socket.urlRoom][socket.name_obj]+=socket.game_points
                     }
@@ -459,7 +465,14 @@
                     else{
                       global.round_wins_points[socket.urlRoom][other_player]+=socket.game_points
                     }
-                   
+                    t1_ = global.round_time_user[socket.urlRoom][socket.name_obj]
+                    t2_ = global.round_time_user[socket.urlRoom][other_player]
+
+                    global.scores.push({'name':socket.name,'opponnent':other_player.split('_')[0],'win_status':flag_win,'time_levels':t1_,'game_room':socket.game_name,'round_details':global.round_wins[socket.urlRoom][socket.name_obj],'round_points': global.round_wins_points[socket.urlRoom][socket.name_obj]});
+
+                    global.scores.push({'name':other_player.split('_')[0],'opponnent':socket.name,'win_status':!flag_win,'time_levels':t2_,'game_room':socket.game_name,'round_details':global.round_wins[socket.urlRoom][other_player],'round_points': global.round_wins_points[socket.urlRoom][other_player]});
+
+
                    	socket.emit('finish',flag_win,flag_round);
       			  			socket.broadcast.to(socket.urlRoom).emit('finish',!flag_win,!flag_round);
       		  			}
