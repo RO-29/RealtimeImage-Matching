@@ -174,7 +174,7 @@
 
   		//Called on creation of game _room
   		socket.on('create or join', function(room,uname) {
-
+        console.log(socket.id);
         var numClients = io.sockets.clients(room).length;
         socket.game_name = room;
         socket.name = uname;
@@ -468,9 +468,9 @@
                     t1_ = global.round_time_user[socket.urlRoom][socket.name_obj]
                     t2_ = global.round_time_user[socket.urlRoom][other_player]
 
-                    global.scores.push({'name':socket.name,'opponnent':other_player.split('_')[0],'win_status':flag_win,'time_levels':t1_,'game_room':socket.game_name,'round_details':global.round_wins[socket.urlRoom][socket.name_obj],'round_points': global.round_wins_points[socket.urlRoom][socket.name_obj]});
+                    global.scores.push({'id':socket.id,'name':socket.name,'opponnent':other_player.split('_')[0],'win_status':flag_win,'time_levels':t1_,'game_room':socket.game_name,'round_details':global.round_wins[socket.urlRoom][socket.name_obj],'round_points': global.round_wins_points[socket.urlRoom][socket.name_obj]});
 
-                    global.scores.push({'name':other_player.split('_')[0],'opponnent':socket.name,'win_status':!flag_win,'time_levels':t2_,'game_room':socket.game_name,'round_details':global.round_wins[socket.urlRoom][other_player],'round_points': global.round_wins_points[socket.urlRoom][other_player]});
+                    global.scores.push({'id':socket.id,'name':other_player.split('_')[0],'opponnent':socket.name,'win_status':!flag_win,'time_levels':t2_,'game_room':socket.game_name,'round_details':global.round_wins[socket.urlRoom][other_player],'round_points': global.round_wins_points[socket.urlRoom][other_player]});
 
 
                    	socket.emit('finish',flag_win,flag_round);
