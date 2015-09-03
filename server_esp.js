@@ -53,10 +53,10 @@
   app.get('/init',function(req,res){
     knex.schema.createTable('game', function (table) {
        table.string('Name');
-       table.integer('levels');
+       table.integer('rounds');
        }).exec();
 
-    knex('game').insert({Name: 'game_1',levels:5}).exec();
+    knex('game').insert({Name: 'game_1',rounds:5}).exec();
     res.send('Done');
 
   });
@@ -164,6 +164,7 @@
   global.answer_time ={}
   global.round_win_number ={}
   global.round_wins_points ={}
+  global.round_time_user ={}
   io.sockets.on('connection', function(socket) {
 
   		//Called on creation of game _room
@@ -207,6 +208,9 @@
               global.answer_time[room]={}
 
          }
+         if(typeof(global.round_time_user[room]) == 'undefined'){
+            global.round_time_user[room] = {}
+         }
      		
         console.log('room: ' + room);
 
@@ -222,15 +226,39 @@
 		     }).exec(function(err, results) {
 		        if (err)
 		            socket.emit('Recieve','db_err')
-		        else
-		            socket.rounds = results[0]['levels'];
+		        else{
+		            socket.rounds = results[0]['rounds'];
+                socket.game_points = results[0]['game_points'];
+
+                round_levels = results[0]['round_levels'];
+                
+                win = results[0]['round_level_win_points'];
+                loose = results[0]['round_level_loose_points'];
+                win = win.split(',')
+                loose = loose.split(',')
+
+                round_levels = round_levels.split(',')
+                
+                for(i=0;i<round_levels.length;i++)
+                  round_levels[i]=parseInt(round_levels[i])
+                
+                for(i=0;i<win.length;i++)
+                  win[i]=parseInt(win[i])
+
+                for(i=0;i<loose.length;i++)
+                  loose[i]=parseInt(loose[i])
+                
+                socket.round_levels = round_levels
+                socket.win_points = win
+                socket.loose_points =loose
+              }
 		    });
       	
         global.responses[socket.urlRoom][socket.name_obj]={}
       	global.responses[socket.urlRoom][socket.name_obj][socket.cur_round+'_'+socket.cur_level]=[];
         global.round_wins[room][socket.name_obj] =[]
         global.round_wins_points[room][socket.name_obj] = 0 
-
+        global.round_time_user[room][socket.name_obj] = []
 
         socket.time_creations['Round_'+socket.cur_round] = []
         socket.time_answers['Round_'+socket.cur_round] = []
@@ -307,7 +335,7 @@
       			if(global.responses[socket.urlRoom][socket.name_obj][socket.cur_round+'_'+socket.cur_level].equals(global.responses[socket.urlRoom][other_player][socket.cur_round+'_'+socket.cur_level])){
 
                 //For incrementing to next level of same round 
-                if(socket.cur_level<3){
+                if(socket.cur_level<socket.round_levels[socket.cur_round-1]){
       
                   socket.cur_level+=1;
                   socket.time_creations['Round_'+socket.cur_round].push(moment())
@@ -326,8 +354,10 @@
                     var time_c_1 = global.create_time[socket.urlRoom][other_player]
                     var time_a_1 = global.answer_time[socket.urlRoom][other_player]
 
+                    console.log('round levels')
+                    console.log(socket.round_levels[socket.cur_round-1])
                     total_time_player_1 =0
-                    for(i=0;i<3;i++){
+                    for(i=0;i<socket.round_levels[socket.cur_round-1];i++){
                       
                       time = socket.time_creations['Round_'+socket.cur_round][i].diff(socket.time_answers['Round_'+socket.cur_round][i],'seconds')
                       
@@ -339,7 +369,7 @@
                     }
 
                     total_time_player_2 =0
-                    for(i=0;i<3;i++){
+                    for(i=0;i<socket.round_levels[socket.cur_round-1];i++){
                       
                       time = time_c_1['Round_'+socket.cur_round][i].diff(time_a_1['Round_'+socket.cur_round][i],'seconds')
                       
@@ -352,25 +382,30 @@
 
                   console.log('player1_time in Round_->',total_time_player_1)
                   console.log('player2_time->',total_time_player_2)
-
+                  global.round_time_user[socket.urlRoom][socket.name_obj].push(total_time_player_1) 
+                  global.round_time_user[socket.urlRoom][other_player].push(total_time_player_2) 
+                  
                   var flag_win = 0
                   if(total_time_player_1 < total_time_player_2){
-                    console.log(global.round_wins)
-                    console.log(global.round_wins[socket.urlRoom][other_player])
+                    
                     global.round_wins[socket.urlRoom][socket.name_obj].push(1)
-                    global.round_wins_points[socket.urlRoom][socket.name_obj]+=2
+                    global.round_wins_points[socket.urlRoom][socket.name_obj]+=socket.win_points[socket.cur_round-1]
+
+                    if(global.round_wins_points[socket.urlRoom][other_player]>0)
+                      global.round_wins_points[socket.urlRoom][other_player]+=socket.loose_points[socket.cur_round-1]
+                    
                     global.round_wins[socket.urlRoom][other_player].push(0)
                     flag_win = 1
                     global.round_win_number[socket.urlRoom][socket.name_obj]+=1
                  }
                  else{
-                      console.log(global.round_wins)
-                      console.log(global.round_wins[socket.urlRoom][other_player])
-
                       global.round_wins[socket.urlRoom][other_player].push(1)
-                      global.round_wins_points[socket.urlRoom][other_player]+=2
-                      global.round_wins[socket.urlRoom][socket.name_obj].push(0)
+                      global.round_wins_points[socket.urlRoom][other_player]+=socket.win_points[socket.cur_round-1]
 
+                      if(global.round_wins_points[socket.urlRoom][socket.name_obj]>0)
+                        global.round_wins_points[socket.urlRoom][socket.name_obj]+=socket.loose_points[socket.cur_round-1]
+                      
+                      global.round_wins[socket.urlRoom][socket.name_obj].push(0)
                       global.round_win_number[socket.urlRoom][other_player]+=1
 
                  }
@@ -399,12 +434,30 @@
       		  			}
       		  			else{
                     flag_round = 0
+
                     if(p1_win>p2_win){
                       flag_round = 1
-                      global.round_wins_points[socket.urlRoom][socket.name_obj]+=10
+                      global.round_wins_points[socket.urlRoom][socket.name_obj]+=socket.game_points
+                    }
+                    //Tie Breaker case, calcualte time of each round , user having less time of all the round will win
+                    else if(p1_win == p2_win){
+                        t1 = 0
+                        for(i=0;i<socket.rounds;i++)
+                          t1+=global.round_time_user[socket.urlRoom][socket.name_obj][i]
+                        
+                        t2 = 0
+                        for(i=0;i<socket.rounds;i++)
+                          t2+=global.round_time_user[socket.urlRoom][other_player][i]
+
+                        if(t1<t2){
+                          flag_round = 1
+                          global.round_wins_points[socket.urlRoom][socket.name_obj]+=socket.game_points
+                        }
+                        else
+                          global.round_wins_points[socket.urlRoom][other_player]+=socket.game_points
                     }
                     else{
-                      global.round_wins_points[socket.urlRoom][other_player]+=10
+                      global.round_wins_points[socket.urlRoom][other_player]+=socket.game_points
                     }
                    
                    	socket.emit('finish',flag_win,flag_round);
