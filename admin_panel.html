@@ -3,11 +3,11 @@
 <title>Admin Interface for adding questions</title>
 </head>
 <body>
-<form method="post" enctype="multipart/form-data" action="http://localhost/upload_panel.php">
+<form method="post" enctype="multipart/form-data" id='panel' action="http://localhost/upload_panel.php">
     <input type='hidden' name='round_levels' id='r_l'>
     <input type='hidden' name='win_points' id='win'>
     <input type='hidden' name='loose_points' id='lost'>
-
+    <input type='hidden' name='req_type' id='req_type' value='nd'>
     <div id='g_r_l_n'>
     <br>Game Name?
     <input name='game_name' type='text'>
@@ -20,6 +20,7 @@
     <button id='g_r_n_b'>next</button>
     </div>
     <div id='details'>
+        <div id='radio' ><br><br>Add Dynamic Images? Yes<input type="radio" value ="1" name="dec" > No<input type="radio" name="dec" value="0" checked></div>
     <div id='g_r_l'></div>
     <div id='round_points_win'></div>
     <div id='round_points_loose'></div>
@@ -75,18 +76,18 @@ $(document).ready(function(){
             $('#round_points_loose').append('<br><br>Round '+(i+1)+' Loose Points?<input name="r_'+(i+1)+'_loose" value=-1>')
         }
           
-
         $('#details').append('<br><br><button id="g_r_l_b">next</button>')
         
     })
 
     $('#details').on('click','#g_r_l_b',function(e){
         e.preventDefault()
-        console.log('Clicked Next for levels')
+        console.log('Clicked Next for levels ')
         $('#details').hide()
         levels = getAllValues()
         win_points()
         loose_points()
+        if($("#panel input[type='radio']:checked").val() == 0){
         for(i=0;i<levels.length;i++){
             $('#images').append('<br><b><u>Round '+(i+1)+'</u></b>')
             for(j=0;j<levels[i];j++){
@@ -96,6 +97,18 @@ $(document).ready(function(){
             }
             $('#images').append('<br><br>')
         }
+        }
+        else{
+                sum = 0
+                for(i=0;i<levels.length;i++){
+                    sum+=levels[i]*5;
+                }
+
+                $('#images').append('<br><br>Please select '+sum+' images from your file system <input name="dyn_img[]" type="file" multiple>')
+                $('#req_type').val('d')
+
+
+            }
         $('#sub').show()
     })
 
