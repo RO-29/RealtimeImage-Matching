@@ -3,40 +3,105 @@
 <title>Admin Interface for adding questions</title>
 </head>
 <body>
-<form method="post" enctype="multipart/form-data" action="/upload">
-	<br>Game Name
-	<input name='game_name' type='text'>
+<form method="post" enctype="multipart/form-data" action="http://localhost/upload_panel.php">
+    <input type='hidden' name='round_levels' id='r_l'>
+    <input type='hidden' name='win_points' id='win'>
+    <input type='hidden' name='loose_points' id='lost'>
 
-	<br><br>Base image 1
-    <input type="file" name="b_1">
-    <br><br>Answer images 1 (Multi Select)
-    <input type="file" name="a_1[]" multiple>
-
-    <br><br>Base image 2
-    <input type="file" name="b_2">
-    <br><br>Answer images 2 (Multi Select)
-    <input type="file" name="a_2[]" multiple>
-
-	<br><br>Base image 3
-    <input type="file" name="b_3">
-    <br><br>Answer images 3 (Multi Select)
-    <input type="file" name="a_3[]" multiple>
-
-	<br><br>Base image 4
-    <input type="file" name="b_4">
-    <br><br>Answer images 4 (Multi Select)
-    <input type="file" name="a_4[]" multiple>
-
-	<br><br>Base image 5
-    <input type="file" name="b_5">
-    <br><br>Answer image (Multi Select)
-    <input type="file" name="a_5[]" multiple>
-
+    <div id='g_r_l_n'>
+    <br>Game Name?
+    <input name='game_name' type='text'>
+    <br><br>Game Rounds?
+    <input name='game_rounds' id='g_r' value=5>
+    <br><br>Game Points?
+    <input name='game_points' value=10>
     <br><br>
-    <input type="submit" value="Submit">
+    
+    <button id='g_r_n_b'>next</button>
+    </div>
+    <div id='details'>
+    <div id='g_r_l'></div>
+    <div id='round_points_win'></div>
+    <div id='round_points_loose'></div>
+    </div>
+    <div id='images'>
+    </div>
+    
+    <br><br>
+    <input type="submit" id ='sub' value="Submit" style='display:none'>
 </form>
+<script src='static/js/jquery.js'></script>
+<script>
 
+$(document).ready(function(){
 
-<script src='/static/js/jquery.js'></script>
+        function getAllValues() {
+          var allVal = [];
+          $("#g_r_l > input").each(function() {
+            allVal.push(parseInt($(this).val()));
+          });
+          console.log(allVal);
+          $('#r_l').val(allVal);
+          return allVal;
+
+        }
+
+        function win_points(){
+              var allVal = [];
+              $("#round_points_win > input").each(function() {
+                allVal.push(parseInt($(this).val()));
+              });
+              console.log(allVal);
+              $('#win').val(allVal);
+        }
+
+        function loose_points(){
+              var allVal = [];
+              $("#round_points_loose > input").each(function() {
+                allVal.push(parseInt($(this).val()));
+              });
+              console.log(allVal);
+              $('#lost').val(allVal);
+        }
+
+    $('#g_r_n_b').click(function(e){
+        e.preventDefault()
+        rounds = $('#g_r').val()
+        $('#g_r_l_n').hide()
+
+        for(i=0;i<rounds;i++){
+            $('#g_r_l').append('<br><br>Round '+(i+1)+' Levels?<input name="r_'+(i+1)+'_l" value=3>')
+            $('#round_points_win').append('<br><br>Round '+(i+1)+' Win points?<input name="r_'+(i+1)+'_win" value=2>')
+            $('#round_points_loose').append('<br><br>Round '+(i+1)+' Loose Points?<input name="r_'+(i+1)+'_loose" value=-1>')
+        }
+          
+
+        $('#details').append('<br><br><button id="g_r_l_b">next</button>')
+        
+    })
+
+    $('#details').on('click','#g_r_l_b',function(e){
+        e.preventDefault()
+        console.log('Clicked Next for levels')
+        $('#details').hide()
+        levels = getAllValues()
+        win_points()
+        loose_points()
+        for(i=0;i<levels.length;i++){
+            $('#images').append('<br><b><u>Round '+(i+1)+'</u></b>')
+            for(j=0;j<levels[i];j++){
+                $('#images').append('<br><br><b>Level '+(j+1)+'</b>')
+                $('#images').append('<br>Base Image <input type="file" name="b_'+(i+1)+'_'+(j+1)+'">')
+                $('#images').append('<br><br>Answer Image(s) (Multi Select) <input type="file" name="a_'+(i+1)+'_'+(j+1)+'[]" multiple>')
+            }
+            $('#images').append('<br><br>')
+        }
+        $('#sub').show()
+    })
+
+})
+
+</script>
+
 </body>
 </html>
